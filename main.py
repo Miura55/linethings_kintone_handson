@@ -1,6 +1,4 @@
 from flask import Flask, request, abort, render_template
-from datetime import datetime
-import datetime as dt
 import os
 import json
 import base64
