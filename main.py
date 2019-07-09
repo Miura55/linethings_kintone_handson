@@ -19,9 +19,6 @@ from linebot.models import (
 CHANNEL_ACCESS_TOKEN = os.environ.get('CHANNEL_ACCESS_TOKEN')
 CHANNEL_SECRET = os.environ.get('CHANNEL_SECRET')
 
-# CHANNEL_ACCESS_TOKEN = "7efMffmVz5flkbMB63dFXX7eEarxWEq13mhorgzMwH9ih9DWlQ6mf40CKGOrs8cmmh7MyiTAjH4mtNFobdG/kO7o1VShglxkdXyCKrM5honZJX7zGuYfIXgJ824d5NDZDgGe0rcvqzj5iiyffh1591GUYhWQfeY8sLGRXgo3xvw="
-# CHANNEL_SECRET = "23ae6680c77a3a9b04fb2513db16bf85"
-
 line_bot_api = LineBotApi(CHANNEL_ACCESS_TOKEN)
 parser = WebhookParser(CHANNEL_SECRET)
 
@@ -37,7 +34,7 @@ def callback():
 
     # get request body as text
     body = request.get_data(as_text=True)
-    app.logger.info("Request body: " + body)
+    print("Request body: " + body)
 
     try:
         for event in parser.parse(body, signature):
@@ -65,7 +62,7 @@ def handle_things_event(event):
         tempelature = int.from_bytes(base64.b64decode(event["things"]["result"]["bleNotificationPayload"]), "little")
         line_bot_api.reply_message(event["replyToken"], TextSendMessage(text="値を受け取ったよ %s" % (tempelature)))
 
-    app.logger.info("Got data: " + str(tempelature))
+    print("Got data: " + str(tempelature))
 
 def handle_message(event):
     if event.type == "message" and event.message.type == "text":
