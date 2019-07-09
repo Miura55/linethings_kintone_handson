@@ -15,7 +15,7 @@ from linebot.models import (
     MessageEvent, TextMessage, TextSendMessage,
 )
 
-
+# get Token and Secret from token
 CHANNEL_ACCESS_TOKEN = os.environ.get('CHANNEL_ACCESS_TOKEN')
 CHANNEL_SECRET = os.environ.get('CHANNEL_SECRET')
 
@@ -24,6 +24,7 @@ parser = WebhookParser(CHANNEL_SECRET)
 
 app = Flask(__name__)
 
+# check server working
 @app.route('/')
 def do_get():
     return "Hello, from flask!"
@@ -37,14 +38,14 @@ def callback():
     print("Request body: " + body)
 
     try:
-        for event in parser.parse(body, signature):
-            handle_message(event)
-
         # Parse JSON without SDK for LINE Things event
         events = json.loads(body)
         for event in events["events"]:
             if "things" in event:
                 handle_things_event(event)
+            else:
+                event = parser.parse(body, signature)[0]
+                handle_message(event)
     except InvalidSignatureError:
         print("Invalid signature. Please check your channel access token/channel secret.")
         abort(400)
@@ -58,8 +59,10 @@ def handle_things_event(event):
         app.logger.warn("Error result: %s", event)
         return
 
+    # send message of sensor value
     if event["things"]["result"]["bleNotificationPayload"] :
-        tempelature = int.from_bytes(base64.b64decode(event["things"]["result"]["bleNotificationPayload"]), "little")
+        payload = base64.b64decode(event["things"]["result"]["bleNotificationPayload"])
+        tempelature = int.from_bytes(payload, 'big') / 100.0
         line_bot_api.reply_message(event["replyToken"], TextSendMessage(text="値を受け取ったよ %s" % (tempelature)))
 
     print("Got data: " + str(tempelature))
