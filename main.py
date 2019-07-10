@@ -59,12 +59,14 @@ def handle_things_event(event):
         app.logger.warn("Error result: %s", event)
         return
 
-    # send message of sensor value
-    if event["things"]["result"]["bleNotificationPayload"] :
+    # send message of payload
+    try:
         payload = base64.b64decode(event["things"]["result"]["bleNotificationPayload"])
         tempelature = int.from_bytes(payload, 'big') / 100.0
         line_bot_api.reply_message(event["replyToken"], TextSendMessage(text="値を受け取ったよ %s" % (tempelature)))
-
+    except KeyError:
+        return
+        
     print("Got data: " + str(tempelature))
 
 def handle_message(event):
