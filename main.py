@@ -15,7 +15,7 @@ from linebot.models import (
 
 app = Flask(__name__)
 
-ACCESS_TOKEN = os.getenv("ACCESS_TOKEN")
+ACCESS_TOKEN = os.getenv("CHANNEL_ACCESS_TOKEN")
 CHANNEL_SECRET = os.getenv("CHANNEL_SECRET")
 line_bot_api = LineBotApi(ACCESS_TOKEN)
 parser = WebhookParser(CHANNEL_SECRET)
