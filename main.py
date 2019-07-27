@@ -97,6 +97,7 @@ def post_kintone(url, app, api_token, val):
     }
     headers = {"X-Cybozu-API-Token": api_token, "Content-Type" : "application/json"}
     requests.post(url, json=params, headers=headers)
+    print("OK!")
 
 if __name__ == "__main__":
     app.debug = True
