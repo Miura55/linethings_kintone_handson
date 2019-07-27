@@ -58,7 +58,8 @@ def handle_things_event(event):
 
     if "bleNotificationPayload" in event["things"]["result"]:
         button_state = base64.b64decode(event["things"]["result"]["bleNotificationPayload"])
-        line_bot_api.reply_message(event["replyToken"], TextSendMessage(text="ボタンが押されたよ %s" % (button_state)))
+        tempelature = int.from_bytes(button_state, 'big') / 100
+        line_bot_api.reply_message(event["replyToken"], TextSendMessage(text="値を取得 %s" % (tempelature)))
 
 def handle_message(event):
     if event.type == "message" and event.message.type == "text":
