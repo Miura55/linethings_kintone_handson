@@ -29,6 +29,12 @@ parser = WebhookParser(CHANNEL_SECRET)
 
 app = Flask(__name__)
 
+# ↓ Added code
+# kintone Settings
+URL = "https://devksmpdi.cybozu.com/k/v1/record.json" # change your URL
+APPID = 18 # change your App ID
+API_TOKEN = "Yx5d9zcm1fCet8V07cJjRbaN6e0dJjD2LbcFRAxN" # change your Token
+
 @app.route('/')
 def do_get():
     return "Hello, from flask!"
@@ -67,7 +73,9 @@ def handle_things_event(event):
     try:
         payload = base64.b64decode(event["things"]["result"]["bleNotificationPayload"])
         tempelature = int.from_bytes(payload, 'big') / 100.0
-        line_bot_api.reply_message(event["replyToken"], TextSendMessage(text="値を受け取ったよ %s" % (tempelature)))
+        # line_bot_api.reply_message(event["replyToken"], TextSendMessage(text="値を受け取ったよ %s" % (tempelature)))
+        # ↓ Added Post Data Code
+        post_kintone(URL, APPID, API_TOKEN, tempelature)
     except KeyError:
         return
 
@@ -77,6 +85,18 @@ def handle_message(event):
     if event.type == "message" and event.message.type == "text":
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text=event.message.text))
 
+# ↓ Added Post Data func
+def post_kintone(url, app, api_token, val):
+    params = {
+        "app": app,
+        "record": {
+            "num": {
+            "value": val
+            }
+        }
+    }
+    headers = {"X-Cybozu-API-Token": api_token, "Content-Type" : "application/json"}
+    requests.post(url, json=params, headers=headers)
 
 if __name__ == "__main__":
     app.debug = True
